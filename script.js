@@ -1,6 +1,6 @@
 let firstNumber = "";
 let secondNumber = "";
-let currentOperator = "";
+let currentOperator = null;
 let positive = true;
 let deleteContent = false;
 
@@ -27,13 +27,29 @@ operatorButtons.forEach((button) =>
   button.addEventListener("click", () => setOperator(button.textContent))
 );
 
-// signButton.addEventListener("click", changeSign);
+signButton.addEventListener("click", changeSign);
 ceButton.addEventListener("click", clearEntry);
 clearButton.addEventListener("click", clearEverything);
 deleteButton.addEventListener("click", deleteNumber);
 pointButton.addEventListener("click", addPoint);
 
 equalsButton.addEventListener("click", checkOperation);
+
+function changeSign() {
+  if (
+    currentOperation.textContent === "" ||
+    currentOperation.textContent === "0"
+  ) {
+    return;
+  }
+  currentNumber = Number(currentOperation.textContent);
+
+  if (currentNumber > 0) {
+    currentOperation.textContent = "-" + currentOperation.textContent;
+  } else {
+    currentOperation.textContent = currentOperation.textContent.slice(1);
+  }
+}
 
 function clearEntry() {
   currentOperation.textContent = "0";
@@ -42,7 +58,7 @@ function clearEntry() {
 function clearEverything() {
   firstNumber = "";
   secondNumber = "";
-  currentOperator = "";
+  currentOperator = null;
   currentOperation.textContent = "0";
   cacheOperation.textContent = "";
 }
@@ -52,12 +68,41 @@ function deleteCurrentScreen() {
   deleteContent = false;
 }
 
-function checkOperation() {}
+function setOperator(operator) {
+  if (currentOperator != null) {
+    checkOperation();
+  }
+
+  firstNumber = currentOperation.textContent;
+
+  currentOperator = operator;
+  cacheOperation.textContent = firstNumber + currentOperator;
+  deleteContent = true;
+}
+
+function checkOperation() {
+  if (currentOperator === null || deleteContent) {
+    return;
+  }
+  if (currentOperator === "÷" && currentOperation.textContent === "0") {
+    alert("Division by 0 is bad :(");
+    return;
+  }
+  secondNumber = currentOperation.textContent.toString();
+  currentOperation.textContent = operate(
+    currentOperator,
+    firstNumber,
+    secondNumber
+  );
+  cacheOperation.textContent = firstNumber + currentOperator + secondNumber;
+  currentOperator = null;
+}
 
 function appendNumber(number) {
   if (currentOperation.textContent === "0" || deleteContent)
     deleteCurrentScreen();
   currentOperation.textContent += number;
+
   /**/
 }
 
@@ -83,37 +128,44 @@ function deleteNumber() {
     .slice(0, -1);
 }
 
-// function add(x, y) {
-//   return x + y;
-// }
+function add(x, y) {
+  return x + y;
+}
 
-// function subtract(x, y) {
-//   return x - y;
-// }
+function subtract(x, y) {
+  return x - y;
+}
 
-// function multiply(x, y) {
-//   return x * y;
-// }
+function multiply(x, y) {
+  return x * y;
+}
 
-// function divide(x, y) {
-//   if (y === 0) {
-//     return "You can't divide by zero!"; /* should add alert, not return also clear display */
-//   }
-//   return x / y;
-// }
+function divide(x, y) {
+  if (y === 0) {
+    return "You can't divide by zero!"; /* should add alert, not return also clear display */
+  }
+  return x / y;
+}
 
-// function operate(operator, x, y) {
-//   switch (operator) {
-//     case "+":
-//       return add(x, y);
-//       break;
-//     case "-":
-//       return subtract(x, y);
-//       break;
-//     case "*":
-//       return multiply(x, y);
-//       break;
-//     case "/":
-//       return divide(x, y);
-//   }
-// }
+function operate(operator, x, y) {
+  let firstNum = Number(x);
+  let secondNum = Number(y);
+
+  switch (operator) {
+    case "+":
+      return add(firstNum, secondNum);
+      break;
+    case "-":
+      return subtract(firstNum, secondNum);
+      break;
+    case "x":
+      return multiply(firstNum, secondNum);
+      break;
+    case "÷":
+      if (secondNum === 0) {
+        return null;
+      } else return divide(firstNum, secondNum);
+      break;
+    default:
+  }
+}

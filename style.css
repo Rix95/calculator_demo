@@ -67,4 +67,9 @@ body {
   color: #455da8;
 }
 
+.btn:hover {
+  background-color: #f9dba09c;
+  color: #656381;
+  border: 3px solid #5d2d01;
+}
 /* Change = Color */
